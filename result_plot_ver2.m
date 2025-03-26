@@ -84,34 +84,34 @@ y = lsqcurvefit(modelfun, initial_guess, r2b_surf_SNR, b2r_Hs, [], [], options);
 r2b_surf_Hs = y(1) + y(2) .* r2b_surf_SNR;
 
 %% 확인 Graph
-for i = 1 : 31
+for i = 1 : 1
     a = figure(1);
     hold on;
-    yyaxis left
-    plot(b2r_Date, movmean(b2r_Hs, 3), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-');
-    plot(r2b_Date, movmean(r2b_wave_Hs, 3), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-');
-    plot(r2b_Date, movmean(r2b_surf_Hs, 3), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-');
+    % yyaxis left
+    plot(b2r_Date, movmean(b2r_Hs, 12), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-', 'LineWidth',0.3);
+    plot(r2b_Date, movmean(r2b_wave_Hs, 12), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-', 'LineWidth',0.3);
+    plot(r2b_Date, movmean(r2b_surf_Hs, 12), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-', 'LineWidth',0.3);
     ylabel("Hs [m]");
-    yyaxis right
-    plot(b2r_Date, movmean(b2r_Wind, 3), 'Color', [0.9, 0.2, 0.9, 0.7], 'LineStyle', '-.');
-    ylabel("Wind Velocity [m/s]");
+    % yyaxis right
+    % plot(b2r_Date, movmean(b2r_Wind, 3), 'Color', [0.9, 0.2, 0.9, 0.7], 'LineStyle', '-.');
+    % ylabel("Wind Velocity [m/s]");
     hold off;
 
     set(gcf, 'Position', [0, 0, 1820, 980]);
-    xlim([datetime(2019, 12, i), datetime(2019, 12, i) + days(2)]);
+    xlim([datetime(2019, 10, 1), datetime(2019, 12, 30) + days(2)]);
     title("Significant Wave Height", "FontSize", 15);
     xlabel("Date [mm dd]");
     legend('Bouy', 'Wave', 'Surf', 'Wind Velocity');
 
-    if i < 10
-        saveas(gcf, ['./Image0324/w4_2019120', num2str(i), '.fig']);
-        saveas(gcf, ['./Image0324/w4_2019120', num2str(i), '.png']);
-    else
-        saveas(gcf, ['./Image0324/w4_201912', num2str(i), '.fig']);
-        saveas(gcf, ['./Image0324/w4_201912', num2str(i), '.png']);
-    end
+    % if i < 10
+    %     saveas(gcf, ['./Image0324/w4_2019120', num2str(i), '.fig']);
+    %     saveas(gcf, ['./Image0324/w4_2019120', num2str(i), '.png']);
+    % else
+    %     saveas(gcf, ['./Image0324/w4_201912', num2str(i), '.fig']);
+    %     saveas(gcf, ['./Image0324/w4_201912', num2str(i), '.png']);
+    % end
 
-    close(a);
+    % close(a);
 end
 
 %% 확인 R2

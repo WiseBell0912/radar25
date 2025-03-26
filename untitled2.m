@@ -89,9 +89,9 @@ t = tiledlayout(2,1);
 a = nexttile;
 hold on;
 % yyaxis left
-plot(b2r_Date, movmean(b2r_Hs, 3), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-');
-plot(r2b_Date, movmean(r2b_wave_Hs, 3), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-');
-plot(r2b_Date, movmean(r2b_surf_Hs, 3), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-');
+plot(b2r_Date, movmean(b2r_Hs, 1), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-');
+plot(r2b_Date, movmean(r2b_wave_Hs, 1), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-');
+plot(r2b_Date, movmean(r2b_surf_Hs, 1), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-');
 ylabel("Hs [m]");
 % yyaxis right
 % plot(b2r_Date, movmean(b2r_Wind, 3), 'Color', [0.9, 0.2, 0.9, 0.7], 'LineStyle', '-.');
@@ -135,5 +135,5 @@ function txt = cursorCallback(~, event_obj, extraParam1, extraParam2)
 
     % 두 번째 타일에 이미지 업데이트
     nexttile(2);
-    imshow(['C:\Users\Hyeonjong Im\Documents\새 폴더\image\Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
 end
