@@ -12,19 +12,19 @@ clear a_Date01 a_Hs01 a_Pdir01 a_Tp01 a_Date02 a_Hs02 a_Pdir02 a_Tp02
 load("new_Bouy_no_NAN_ZERO.mat");
 
 % Radar wave
-load("snr_y1910_wave.mat");
+load("snr_y1910_wave_0327.mat");
 r_Date = Date;
 r_wave_SNR = SNR;
 r_wave_Ux = Ux;
 r_wave_Uy = Uy;
 
-load("snr_y1911_wave.mat");
+load("snr_y1911_wave_0327.mat");
 r_Date = [r_Date ; Date];
 r_wave_SNR = [r_wave_SNR ; SNR];
 r_wave_Ux = [r_wave_Ux ; Ux];
 r_wave_Uy = [r_wave_Uy ; Uy];
 
-load("snr_y1912_wave.mat");
+load("snr_y1912_wave_0327.mat");
 r_Date = [r_Date ; Date];
 r_wave_SNR = [r_wave_SNR ; SNR];
 r_wave_Ux = [r_wave_Ux ; Ux];
@@ -33,19 +33,19 @@ r_wave_Uy = [r_wave_Uy ; Uy];
 r_wave_SNR = sqrt(r_wave_SNR);
 
 % Radar surf
-load("snr_y1910_surf.mat");
+load("snr_y1910_surf_0327.mat");
 r_Date = Date;
 r_surf_SNR = SNR;
 r_surf_Ux = Ux;
 r_surf_Uy = Uy;
 
-load("snr_y1911_surf.mat");
+load("snr_y1911_surf_0327.mat");
 r_Date = [r_Date ; Date];
 r_surf_SNR = [r_surf_SNR ; SNR];
 r_surf_Ux = [r_surf_Ux ; Ux];
 r_surf_Uy = [r_surf_Uy ; Uy];
 
-load("snr_y1912_surf.mat");
+load("snr_y1912_surf_0327.mat");
 r_Date = [r_Date ; Date];
 r_surf_SNR = [r_surf_SNR ; SNR];
 r_surf_Ux = [r_surf_Ux ; Ux];
