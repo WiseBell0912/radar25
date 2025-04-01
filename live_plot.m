@@ -158,8 +158,8 @@ function txt = cursorCallback(~, event_obj, extraParam1, extraParam2, extraParam
 
     % 두 번째 타일에 이미지 업데이트
     nexttile(2);
-    %imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
-    imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    %imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
     information = { sprintf('Wind Speed  =  %.2f  [m/s]', windspeed), ...
                     sprintf('Wave Pdir     =  %.2f  [deg]', wave_Pdir), ...
                     sprintf('Wave Tp       =  %.2f  [s]', wave_Tp), ...
