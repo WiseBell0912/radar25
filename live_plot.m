@@ -12,42 +12,54 @@ clear a_Date01 a_Hs01 a_Pdir01 a_Tp01 a_Date02 a_Hs02 a_Pdir02 a_Tp02
 load("new_Bouy_no_NAN_ZERO.mat");
 
 % Radar wave
-load("snr_y1910_wave.mat");
+load("./0327/snr_y1910_wave_0327.mat");
 r_Date = Date;
+r_wave_Pdir = Pdir;
 r_wave_SNR = SNR;
+r_wave_Tp = Tp;
 r_wave_Ux = Ux;
 r_wave_Uy = Uy;
 
-load("snr_y1911_wave.mat");
+load("./0327/snr_y1911_wave_0327.mat");
 r_Date = [r_Date ; Date];
+r_wave_Pdir = [r_wave_Pdir ; Pdir];
 r_wave_SNR = [r_wave_SNR ; SNR];
+r_wave_Tp = [r_wave_Tp ; Tp];
 r_wave_Ux = [r_wave_Ux ; Ux];
 r_wave_Uy = [r_wave_Uy ; Uy];
 
-load("snr_y1912_wave.mat");
+load("./0327/snr_y1912_wave_0327.mat");
 r_Date = [r_Date ; Date];
+r_wave_Pdir = [r_wave_Pdir ; Pdir];
 r_wave_SNR = [r_wave_SNR ; SNR];
+r_wave_Tp = [r_wave_Tp ; Tp];
 r_wave_Ux = [r_wave_Ux ; Ux];
 r_wave_Uy = [r_wave_Uy ; Uy];
 
 r_wave_SNR = sqrt(r_wave_SNR);
 
 % Radar surf
-load("snr_y1910_surf.mat");
+load("./0327/snr_y1910_surf_0327.mat");
 r_Date = Date;
+r_surf_Pdir = Pdir;
 r_surf_SNR = SNR;
+r_surf_Tp = Tp;
 r_surf_Ux = Ux;
 r_surf_Uy = Uy;
 
-load("snr_y1911_surf.mat");
+load("./0327/snr_y1911_surf_0327.mat");
 r_Date = [r_Date ; Date];
+r_surf_Pdir = [r_surf_Pdir ; Pdir];
 r_surf_SNR = [r_surf_SNR ; SNR];
+r_surf_Tp = [r_surf_Tp ; Tp];
 r_surf_Ux = [r_surf_Ux ; Ux];
 r_surf_Uy = [r_surf_Uy ; Uy];
 
-load("snr_y1912_surf.mat");
+load("./0327/snr_y1912_surf_0327.mat");
 r_Date = [r_Date ; Date];
+r_surf_Pdir = [r_surf_Pdir ; Pdir];
 r_surf_SNR = [r_surf_SNR ; SNR];
+r_surf_Tp = [r_surf_Tp ; Tp];
 r_surf_Ux = [r_surf_Ux ; Ux];
 r_surf_Uy = [r_surf_Uy ; Uy];
 
@@ -59,8 +71,12 @@ clear Date SNR Ux Uy r_wave_Ux r_wave_Uy r_surf_Ux r_surf_Uy
 mask_r2b = ismember(r_Date, b_Date);
 
 r2b_Date = r_Date(mask_r2b);
+r2b_wave_Pdir = r_wave_Pdir(mask_r2b);
 r2b_wave_SNR = r_wave_SNR(mask_r2b);
+r2b_wave_Tp = r_wave_Tp(mask_r2b);
+r2b_surf_Pdir = r_surf_Pdir(mask_r2b);
 r2b_surf_SNR = r_surf_SNR(mask_r2b);
+r2b_surf_Tp = r_surf_Tp(mask_r2b);
 
 mask_b2r = ismember(b_Date, r_Date);
 
@@ -114,26 +130,41 @@ datacursormode on;
 % 추가 인수 (예: 추가 정보를 담은 변수)
 extraParam1 = b2r_Date;
 extraParam2 = b2r_Wind;
+extraParam3 = r2b_wave_Pdir;
+extraParam4 = r2b_wave_Tp;
+extraParam5 = r2b_surf_Pdir;
+extraParam6 = r2b_surf_Tp;
 
 % 익명 함수로 추가 인수 전달
-set(dcm, 'UpdateFcn', @(obj, event_obj) cursorCallback(obj, event_obj, extraParam1, extraParam2));
+set(dcm, 'UpdateFcn', @(obj, event_obj) cursorCallback(obj, event_obj, extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6));
 
 b = nexttile;
 
 % 클릭 시 좌표를 출력하는 함수
-function txt = cursorCallback(~, event_obj, extraParam1, extraParam2)
+function txt = cursorCallback(~, event_obj, extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6)
     pos = event_obj.Position; % [x, y] 값
     clickedDate = datetime(pos(1), 'ConvertFrom', 'datenum') + calyears(2019) + calmonths(9) + caldays(1); % x값을 datetime으로 변환
     
     idx = extraParam1 == clickedDate;
     windspeed = extraParam2(idx);
+    wave_Pdir = extraParam3(idx);
+    wave_Tp = extraParam4(idx);
+    surf_Pdir = extraParam5(idx);
+    surf_Tp = extraParam6(idx);
 
     % 'yyyy-mm-dd HH:MM' 포맷으로 변환하여 출력
     txt = {sprintf('Date = %s', datestr(clickedDate, 'yyyy-mm-dd HH:MM')), ...
-           sprintf('Hs = %.2f [m]', pos(2)), ...
-           sprintf('Wind Speed = %.2f m/s', windspeed)}; % 추가 인수 사용
+           sprintf('Hs = %.2f [m]', pos(2))}; % 추가 인수 사용
 
     % 두 번째 타일에 이미지 업데이트
     nexttile(2);
-    imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    %imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+    information = { sprintf('Wind Speed  =  %.2f  [m/s]', windspeed), ...
+                    sprintf('Wave Pdir     =  %.2f  [deg]', wave_Pdir), ...
+                    sprintf('Wave Tp       =  %.2f  [s]', wave_Tp), ...
+                    sprintf('Surf Pdir       =  %.2f  [deg]', surf_Pdir), ...
+                    sprintf('Surf Tp         =  %.2f  [s]', surf_Tp)};
+    t = title(information);
+    t.HorizontalAlignment = 'left';
 end
