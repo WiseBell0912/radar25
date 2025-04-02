@@ -11,7 +11,9 @@ a_Tp = a_Tp02;
 clear a_Date01 a_Hs01 a_Pdir01 a_Tp01 a_Date02 a_Hs02 a_Pdir02 a_Tp02
 
 % Bouy
-load("new_Bouy_no_NAN_ZERO.mat");
+load("Bouy.mat");
+b_Pdir = b_WaveDirection;
+b_Tp = b_MaximumWavePeriod;
 
 % Radar wave
 load("./0327/snr_y1910_wave_0327.mat");
@@ -70,35 +72,50 @@ r_surf_SNR = sqrt(r_surf_SNR);
 clear Date SNR Ux Uy r_wave_Ux r_wave_Uy r_surf_Ux r_surf_Uy
 
 %% 처리 
-mask_r2a = ismember(r_Date, a_Date);
+mask1 = ismember(r_Date, a_Date);
+mask2 = ismember(r_Date, b_Date);
+mask = mask1 & mask2;
 
-r2a_Date = r_Date(mask_r2a);
-r2a_wave_Pdir = r_wave_Pdir(mask_r2a);
-r2a_wave_Tp = r_wave_Tp(mask_r2a);
-r2a_surf_Pdir = r_surf_Pdir(mask_r2a);
-r2a_surf_Tp = r_surf_Tp(mask_r2a);
+rr_Date = r_Date(mask);
+rr_wave_Pdir = r_wave_Pdir(mask);
+rr_wave_Tp = r_wave_Tp(mask);
+rr_surf_Pdir = r_surf_Pdir(mask);
+rr_surf_Tp = r_surf_Tp(mask);
 
-mask_a2r = ismember(a_Date, r_Date);
+mask1 = ismember(a_Date, b_Date);
+mask2 = ismember(a_Date, r_Date);
+mask = mask1 & mask2;
 
-a2r_Date = a_Date(mask_a2r);
-a2r_Pdir = a_Pdir(mask_a2r);
-a2r_Tp = a_Tp(mask_a2r);
+aa_Date = a_Date(mask);
+aa_Pdir = a_Pdir(mask);
+aa_Tp = a_Tp(mask);
 
+mask1 = ismember(b_Date, a_Date);
+mask2 = ismember(b_Date, r_Date);
+mask = mask1 & mask2;
+
+bb_Date = b_Date(mask);
+bb_Pdir = b_Pdir(mask);
+bb_Tp = b_Tp(mask);
 %% 그래프 Pdir
 figure(1)
-tiledlayout(1,3);
+tiledlayout(1,4);
 
 nexttile;
-polarhistogram(deg2rad(r2a_wave_Pdir), 72);
+polarhistogram(deg2rad(rr_wave_Pdir), 72);
 title('Wave Pdir');
 
 nexttile;
-polarhistogram(deg2rad(a2r_Pdir), 72);
+polarhistogram(deg2rad(rr_surf_Pdir), 72);
+title('Surf Pdir');
+
+nexttile;
+polarhistogram(deg2rad(aa_Pdir), 72);
 title('ADCP Pdir');
 
 nexttile;
-polarhistogram(deg2rad(r2a_surf_Pdir), 72);
-title('Surf Pdir');
+polarhistogram(deg2rad(bb_Pdir), 72);
+title('Bouy Pdir');
 
 %% 그래프 Pdir
 figure(2)
@@ -106,22 +123,28 @@ tiledlayout(2,1);
 
 nexttile;
 hold on;
-plot(r2a_Date, r2a_wave_Pdir-180.*(r2a_wave_Pdir > 180));
-plot(r2a_Date, r2a_surf_Pdir-180.*(r2a_surf_Pdir > 180));
-plot(a2r_Date,a2r_Pdir-180.*(a2r_Pdir > 180));
+% plot(rr_Date, rr_wave_Pdir-180.*(rr_wave_Pdir > 180));
+% plot(rr_Date, rr_surf_Pdir-180.*(rr_surf_Pdir > 180));
+% plot(aa_Date,aa_Pdir-180.*(aa_Pdir > 180));
+% plot(aa_Date,bb_Pdir-180.*(bb_Pdir > 180));
+plot(rr_Date, rr_wave_Pdir);
+plot(rr_Date, rr_surf_Pdir);
+plot(aa_Date,aa_Pdir);
+plot(aa_Date,bb_Pdir);
 hold off;
 title('Pdir');
-legend('Wave', 'Surf', 'ADCP');
+legend('Wave', 'Surf', 'ADCP', 'Bouy');
 xlim([datetime(2019, 10, 1), datetime(2019, 11, 1)])
 
 %% 그래프 Tp
 nexttile;
 
 hold on;
-plot(r2a_Date, r2a_wave_Tp);
-plot(r2a_Date, r2a_surf_Tp);
-plot(a2r_Date, a2r_Tp);
+plot(rr_Date, rr_wave_Tp);
+plot(rr_Date, rr_surf_Tp);
+plot(aa_Date, aa_Tp);
+plot(bb_Date, bb_Tp);
 hold off;
 title('Tp');
-legend('Wave', 'Surf', 'ADCP');
+legend('Wave', 'Surf', 'ADCP', 'Bouy');
 xlim([datetime(2019, 10, 1), datetime(2019, 11, 1)]);
