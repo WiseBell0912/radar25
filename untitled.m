@@ -1,7 +1,7 @@
 clear; close all; clc;
 
 %% Search
-file_path = 'E:/png2019/10/';
+file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
 file_list = dir([file_path, '*.png']);
 
 %% Information of Zone
@@ -81,11 +81,11 @@ for i = 1 : nFile
     png_wave = [];
 
     %% FFT: 윈도우 적용 후 FFT 및 HPF 적용
-    img_surf_windowed = img_surf .* window;
+    img_surf_windowed   = img_surf .* window;
     image_surf_spectrum = fftshift(fftn(img_surf_windowed));
     image_surf_spectrum = abs(image_surf_spectrum).^2 / Nx / Ny / Nt;
 
-    img_wave_windowed = img_wave .* window;
+    img_wave_windowed   = img_wave .* window;
     image_wave_spectrum = fftshift(fftn(img_wave_windowed));
     image_wave_spectrum = abs(image_wave_spectrum).^2 / Nx / Ny / Nt;
 
