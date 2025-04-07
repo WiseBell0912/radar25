@@ -12,6 +12,7 @@ clear a_Date01 a_Hs01 a_Pdir01 a_Tp01 a_Date02 a_Hs02 a_Pdir02 a_Tp02
 
 % Bouy
 load("BOUY.mat");
+b_Date = b_Date;
 b_Hs = b_SignificantWaveHeight;
 b_Wind = b_WindSpeed;
 b_Pdir = b_WaveDirection;
@@ -25,6 +26,8 @@ b_Tp = b_Tp(~isnan(b_Hs));
 
 b_Hs(b_Hs == 0) = NaN;
 b_Hs = fillmissing(b_Hs, 'linear');
+
+clear b_AirTemperature b_AtmosphericPressure b_CurrentDirection16Points b_CurrentDirectiondeg b_CurrentSpeed b_MaximumWaveHeight b_MaximumWavePeriod b_SignificantWaveHeight b_SignificantWavePeriod b_WaterTemperature b_WaveDirection b_WindDirection16Points b_WindDirectiondeg b_WindSpeed
 
 % ASOS
 load("ASOS.mat");
@@ -56,6 +59,8 @@ r_wave_Uy = [r_wave_Uy ; Uy];
 
 r_wave_SNR = sqrt(r_wave_SNR);
 
+clear Date Pdir SNR Tp Ux Uy
+
 % Radar surf
 load("./0327/snr_y1910_surf_0327.mat");
 r_Date = Date;
@@ -83,13 +88,17 @@ r_surf_Uy = [r_surf_Uy ; Uy];
 
 r_surf_SNR = sqrt(r_surf_SNR);
 
-clear Date SNR Ux Uy r_wave_Ux r_wave_Uy r_surf_Ux r_surf_Uy
+clear Date Pdir SNR Tp Ux Uy
+
+% Classify
+load('classify_0406.mat');
 
 %% 처리
 mask1 = ismember(r_Date, b_Date);
 mask2 = ismember(r_Date, a_Date);
 mask3 = ismember(r_Date, asos_Date);
-mask = mask1 & mask2 & mask3;
+mask4 = ismember(r_Date, c_Date);
+mask = mask1 & mask2 & mask3 & mask4;
 
 rr_Date = r_Date(mask);
 rr_wave_Pdir = r_wave_Pdir(mask);
@@ -102,7 +111,8 @@ rr_surf_Tp = r_surf_Tp(mask);
 mask1 = ismember(b_Date, r_Date);
 mask2 = ismember(b_Date, a_Date);
 mask3 = ismember(b_Date, asos_Date);
-mask = mask1 & mask2 & mask3;
+mask4 = ismember(b_Date, c_Date);
+mask = mask1 & mask2 & mask3 & mask4;
 
 bb_Date = b_Date(mask);
 bb_Hs = b_Hs(mask);
@@ -113,7 +123,8 @@ bb_Tp = b_Tp(mask);
 mask1 = ismember(a_Date, r_Date);
 mask2 = ismember(a_Date, b_Date);
 mask3 = ismember(a_Date, asos_Date);
-mask = mask1 & mask2 & mask3;
+mask4 = ismember(a_Date, c_Date);
+mask = mask1 & mask2 & mask3 & mask4;
 
 aa_Date = a_Date(mask);
 aa_Pdir = a_Pdir(mask);
@@ -122,10 +133,26 @@ aa_Tp = a_Tp(mask);
 mask1 = ismember(asos_Date, r_Date);
 mask2 = ismember(asos_Date, b_Date);
 mask3 = ismember(asos_Date, a_Date);
-mask = mask1 & mask2 & mask3;
+mask4 = ismember(asos_Date, c_Date);
+mask = mask1 & mask2 & mask3 & mask4;
 
 aasos_Date = asos_Date(mask);
 aasos_Precipitation = asos_Precipitation(mask);
+
+mask1 = ismember(c_Date, r_Date);
+mask2 = ismember(c_Date, b_Date);
+mask3 = ismember(c_Date, asos_Date);
+mask4 = ismember(c_Date, a_Date);
+mask = mask1 & mask2 & mask3 & mask4;
+
+cc_Date = c_Date(mask);
+cc_flag = c_flag(mask);
+cc_isRain = c_isRain(mask);
+cc_isSurfValid = c_isSurfValid(mask);
+cc_isWaveValid = c_isWaveValid(mask);
+
+clear mask1 mask2 mask3 mask4 mask
+
 %% 개발
 modelfun = @(x, r2b_wave_SNR) x(1) + x(2) * r2b_wave_SNR;
 initial_guess = [1, 1];
@@ -181,14 +208,20 @@ extraParam8 = bb_Tp;
 extraParam9 = aa_Pdir;
 extraParam10 = aa_Tp;
 extraParam11 = aasos_Precipitation;
+extraParam12 = c_flag;
+extraParam13 = c_isRain;
+extraParam14 = c_isSurfValid;
+extraParam15 = c_isWaveValid;
 
 % 익명 함수로 추가 인수 전달
-set(dcm, 'UpdateFcn', @(obj, event_obj) cursorCallback(obj, event_obj, extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6, extraParam7, extraParam8, extraParam9, extraParam10, extraParam11));
+set(dcm, 'UpdateFcn', @(obj, event_obj) cursorCallback(obj, event_obj,...
+    extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6, extraParam7, extraParam8, extraParam9, extraParam10, extraParam11, extraParam12, extraParam13, extraParam14, extraParam15));
 
 b = nexttile([1 3]);
 
 % 클릭 시 좌표를 출력하는 함수
-function txt = cursorCallback(~, event_obj, extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6, extraParam7, extraParam8, extraParam9, extraParam10, extraParam11)
+function txt = cursorCallback(~, event_obj,...
+    extraParam1, extraParam2, extraParam3, extraParam4, extraParam5, extraParam6, extraParam7, extraParam8, extraParam9, extraParam10, extraParam11, extraParam12, extraParam13, extraParam14, extraParam15)
 persistent infoTextHandle
 pos = event_obj.Position; % [x, y] 값
 clickedDate = datetime(pos(1), 'ConvertFrom', 'datenum') + calyears(2019) + calmonths(9) + caldays(1); % x값을 datetime으로 변환
@@ -204,6 +237,10 @@ fb_Tp = extraParam8(idx);
 fa_Pdir = extraParam9(idx);
 fa_Tp = extraParam10(idx);
 fasos_Precipitation = extraParam11(idx);
+fc_flag = extraParam12(idx);
+fc_isRain = extraParam13(idx);
+fc_isSurfValid = extraParam14(idx);
+fc_isWaveValid = extraParam15(idx);
 
 % 'yyyy-mm-dd HH:MM' 포맷으로 변환하여 출력
 txt = {sprintf('Date = %s', datestr(clickedDate, 'yyyy-mm-dd HH:MM')), ...
@@ -211,13 +248,17 @@ txt = {sprintf('Date = %s', datestr(clickedDate, 'yyyy-mm-dd HH:MM')), ...
 
 % 두 번째 타일에 이미지 업데이트
 nexttile(4, [1, 2]);
-imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
-%imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+%imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
 nexttile(6);
 axis off; % 축 숨기기
 information = {...
     sprintf('Bouy Wind  =  %6.2f  [m/s]\n', fb_Wind), ...
     sprintf('ASOS Rain  =  %7.2f  [mm]\n', fasos_Precipitation), ...
+    sprintf('isFlag  =  %7.d', fc_flag), ...
+    sprintf('isRain  =  %7.d', fc_isRain), ...
+    sprintf('isSurf  =  %7.d', fc_isSurfValid), ...
+    sprintf('isWave  =  %7.d\n', fc_isWaveValid), ...
     sprintf('Bouy Pdir  =  %6.2f  [deg]', fb_Pdir), ...
     sprintf('ADCP Pdir  =  %6.2f  [deg]', fa_Pdir), ...
     sprintf('Wave Pdir  =  %6.2f  [deg]', fr_wave_Pdir), ...

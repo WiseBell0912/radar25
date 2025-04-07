@@ -30,57 +30,55 @@ b_Hs = fillmissing(b_Hs, 'linear');
 load("ASOS.mat");
 
 % Radar wave
-load("./0327/snr_y1910_wave_0327.mat");
+load("snr_y1910_0406.mat");
+r_WaveE = WaveE;
+r_wave_Uy = wave_Uy;
+r_wave_Ux = wave_Ux;
+r_wave_Tp = wave_Tp;
+r_wave_SNR = wave_SNR;
+r_wave_Pdir = wave_Pdir;
+r_SurfE = SurfE;
+r_surf_Uy = surf_Uy;
+r_surf_Ux = surf_Ux;
+r_surf_Tp = surf_Tp;
+r_surf_SNR = surf_SNR;
+r_surf_Pdir = surf_Pdir;
+r_LandE = LandE;
 r_Date = Date;
-r_wave_Pdir = Pdir;
-r_wave_SNR = SNR;
-r_wave_Tp = Tp;
-r_wave_Ux = Ux;
-r_wave_Uy = Uy;
 
-load("./0327/snr_y1911_wave_0327.mat");
-r_Date = [r_Date ; Date];
-r_wave_Pdir = [r_wave_Pdir ; Pdir];
-r_wave_SNR = [r_wave_SNR ; SNR];
-r_wave_Tp = [r_wave_Tp ; Tp];
-r_wave_Ux = [r_wave_Ux ; Ux];
-r_wave_Uy = [r_wave_Uy ; Uy];
+load("snr_y1911_0406.mat");
+r_WaveE = [r_WaveE; WaveE];
+r_wave_Uy = [r_wave_Uy; wave_Uy];
+r_wave_Ux = [r_wave_Ux; wave_Ux];
+r_wave_Tp = [r_wave_Tp; wave_Tp];
+r_wave_SNR = [r_wave_SNR; wave_SNR];
+r_wave_Pdir = [r_wave_Pdir; wave_Pdir];
+r_SurfE = [r_SurfE; SurfE];
+r_surf_Uy = [r_surf_Uy; surf_Uy];
+r_surf_Ux = [r_surf_Ux; surf_Ux];
+r_surf_Tp = [r_surf_Tp; surf_Tp];
+r_surf_SNR = [r_surf_SNR; surf_SNR];
+r_surf_Pdir = [r_surf_Pdir; surf_Pdir];
+r_LandE = [r_LandE; LandE];
+r_Date = [r_Date; Date];
 
-load("./0327/snr_y1912_wave_0327.mat");
-r_Date = [r_Date ; Date];
-r_wave_Pdir = [r_wave_Pdir ; Pdir];
-r_wave_SNR = [r_wave_SNR ; SNR];
-r_wave_Tp = [r_wave_Tp ; Tp];
-r_wave_Ux = [r_wave_Ux ; Ux];
-r_wave_Uy = [r_wave_Uy ; Uy];
+load("snr_y1912_0406.mat");
+r_WaveE = [r_WaveE; WaveE];
+r_wave_Uy = [r_wave_Uy; wave_Uy];
+r_wave_Ux = [r_wave_Ux; wave_Ux];
+r_wave_Tp = [r_wave_Tp; wave_Tp];
+r_wave_SNR = [r_wave_SNR; wave_SNR];
+r_wave_Pdir = [r_wave_Pdir; wave_Pdir];
+r_SurfE = [r_SurfE; SurfE];
+r_surf_Uy = [r_surf_Uy; surf_Uy];
+r_surf_Ux = [r_surf_Ux; surf_Ux];
+r_surf_Tp = [r_surf_Tp; surf_Tp];
+r_surf_SNR = [r_surf_SNR; surf_SNR];
+r_surf_Pdir = [r_surf_Pdir; surf_Pdir];
+r_LandE = [r_LandE; LandE];
+r_Date = [r_Date; Date];
 
 r_wave_SNR = sqrt(r_wave_SNR);
-
-% Radar surf
-load("./0327/snr_y1910_surf_0327.mat");
-r_Date = Date;
-r_surf_Pdir = Pdir;
-r_surf_SNR = SNR;
-r_surf_Tp = Tp;
-r_surf_Ux = Ux;
-r_surf_Uy = Uy;
-
-load("./0327/snr_y1911_surf_0327.mat");
-r_Date = [r_Date ; Date];
-r_surf_Pdir = [r_surf_Pdir ; Pdir];
-r_surf_SNR = [r_surf_SNR ; SNR];
-r_surf_Tp = [r_surf_Tp ; Tp];
-r_surf_Ux = [r_surf_Ux ; Ux];
-r_surf_Uy = [r_surf_Uy ; Uy];
-
-load("./0327/snr_y1912_surf_0327.mat");
-r_Date = [r_Date ; Date];
-r_surf_Pdir = [r_surf_Pdir ; Pdir];
-r_surf_SNR = [r_surf_SNR ; SNR];
-r_surf_Tp = [r_surf_Tp ; Tp];
-r_surf_Ux = [r_surf_Ux ; Ux];
-r_surf_Uy = [r_surf_Uy ; Uy];
-
 r_surf_SNR = sqrt(r_surf_SNR);
 
 clear Date SNR Ux Uy r_wave_Ux r_wave_Uy r_surf_Ux r_surf_Uy
@@ -216,24 +214,25 @@ imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(click
 nexttile(6);
 axis off; % 축 숨기기
 information = {...
-    sprintf('Bouy Wind  =  %.2f  [m/s]', fb_Wind), ...
-    sprintf('Bouy Pdir         =  %.2f  [s]', fb_Pdir), ...
-    sprintf('Bouy Tp         =  %.2f  [s]', fb), ...
-    sprintf('ADCP Pdir         =  %.2f  [s]', fr_surf_Tp), ...
-    sprintf('ADCP Tp         =  %.2f  [s]', fr_surf_Tp), ...
-    sprintf('ASOS Rain         =  %.2f  [s]', fr_surf_Tp), ...
-    sprintf('Wave Pdir     =  %.2f  [deg]', fr_wave_Pdir), ...
-    sprintf('Wave Tp       =  %.2f  [s]', fr_wave_Tp), ...
-    sprintf('Surf Pdir       =  %.2f  [deg]', fr_surf_Pdir), ...
-    sprintf('Surf Tp         =  %.2f  [s]', fr_surf_Tp), ...
+    sprintf('Bouy Wind  =  %6.2f  [m/s]\n', fb_Wind), ...
+    sprintf('ASOS Rain  =  %7.2f  [mm]\n', fasos_Precipitation), ...
+    sprintf('Bouy Pdir  =  %6.2f  [deg]', fb_Pdir), ...
+    sprintf('ADCP Pdir  =  %6.2f  [deg]', fa_Pdir), ...
+    sprintf('Wave Pdir  =  %6.2f  [deg]', fr_wave_Pdir), ...
+    sprintf('Surf Pdir  =  %6.2f  [deg]\n', fr_surf_Pdir), ...
+    sprintf('Bouy Tp  =  %6.2f  [s]', fb_Tp), ...
+    sprintf('ADCP Tp  =  %6.2f  [s]', fa_Tp), ...
+    sprintf('Wave Tp  =  %6.2f  [s]', fr_wave_Tp), ...
+    sprintf('Surf Tp  =  %6.2f  [s]', fr_surf_Tp), ...
     };
 if isempty(infoTextHandle) || ~isvalid(infoTextHandle)
     % 텍스트가 아직 없으면 새로 생성
     infoTextHandle = text(0.5, 0.5, information, ...
         'Units', 'normalized', ...
-        'HorizontalAlignment', 'left', ...
-        'FontSize', 16, ...
-        'FontWeight', 'bold');
+        'FontName', 'Courier New', ...
+        'HorizontalAlignment', 'center', ...
+        'FontSize', 16 ...
+        );
 else
     % 기존 텍스트 객체의 내용을 업데이트
     set(infoTextHandle, 'String', information);

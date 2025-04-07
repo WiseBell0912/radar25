@@ -1,7 +1,11 @@
 clear; clc;
+for main = 10 : 12
+        clearvars -except main
+
 
 %% Search
-file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
+file_path = ['E:/png2019/',num2str(main), '/'];
+%file_path = 'E:/png2019/10/';
 file_list = dir([file_path, '*.png']);
 
 %% Information of Zone
@@ -53,7 +57,7 @@ window_t  = hann(Nt);                  % Nt
 window    = repmat(window_xy, 1, 1, Nt) .* reshape(window_t, 1, 1, Nt);
 
 %% 하이패스 필터(HPF)용 마스크 미리 계산(반복문 밖)
-hpK = (K > 0.025);
+hpK = (K > 0.03);
 hpW = (abs(W) > 2*pi*0.03);
 hpMask = hpK & hpW;
 
@@ -62,6 +66,8 @@ nFile = length(file_list);
 
 r_Date  = NaT(nFile,1);
 r_LandE = zeros(nFile,1);
+r_SurfE = zeros(nFile,1);
+r_WaveE = zeros(nFile,1);
 
 r_surf_SNR   = zeros(nFile,1);
 r_surf_Ux    = zeros(nFile,1);
@@ -74,6 +80,8 @@ r_wave_Ux    = zeros(nFile,1);
 r_wave_Uy    = zeros(nFile,1);
 r_wave_Tp   = zeros(nFile,1);
 r_wave_Pdir = zeros(nFile,1);
+
+tic
 
 for i = 1 : nFile
     %% 파일 읽기 및 Zone 추출
@@ -97,26 +105,28 @@ for i = 1 : nFile
     img_wave = single(png_wave);
     img_energy = single(png_energy);
 
-    %% Land energy
+    %% Energy
     LandEVal = sum(img_energy, 'all');
+    SurfEVal = sum(img_surf, 'all');
+    WaveEVal = sum(img_wave, 'all');
 
     %% FFT
     img_surf_no_windo   = rot90(flip(img_surf));
     img_surf_windowed   = rot90(flip(img_surf)) .* window;
 
     image_surf_spectrum          = fftshift(fftn(img_surf_windowed));
-    image_surf_spectrum          = abs(image_surf_spectrum).^2 / Nx / Ny / Nt;
+    image_surf_spectrum          = abs(image_surf_spectrum).^2 / Nx^2 / Ny^2 / Nt^2;
     image_surf_spectrum_no_windo = fftshift(fftn(img_surf_no_windo));
-    image_surf_spectrum_no_windo = abs(image_surf_spectrum_no_windo).^2 / Nx / Ny / Nt;
+    image_surf_spectrum_no_windo = abs(image_surf_spectrum_no_windo).^2 / Nx^2 / Ny^2 / Nt^2;
 
 
     img_wave_no_windo   = rot90(flip(img_wave));
     img_wave_windowed   = rot90(flip(img_wave)) .* window;
 
     image_wave_spectrum          = fftshift(fftn(img_wave_windowed));
-    image_wave_spectrum          = abs(image_wave_spectrum).^2 / Nx / Ny / Nt;
+    image_wave_spectrum          = abs(image_wave_spectrum).^2 / Nx^2 / Ny^2 / Nt^2;
     image_wave_spectrum_no_windo = fftshift(fftn(img_wave_no_windo));
-    image_wave_spectrum_no_windo = abs(image_wave_spectrum_no_windo).^2 / Nx / Ny / Nt;
+    image_wave_spectrum_no_windo = abs(image_wave_spectrum_no_windo).^2 / Nx^2 / Ny^2 / Nt^2;
 
     %% HPF
     image_surf_spectrum_hp = image_surf_spectrum .* hpMask;
@@ -126,7 +136,7 @@ for i = 1 : nFile
     image_wave_spectrum_hp_no_windo = image_wave_spectrum_no_windo .* hpMask;
 
     %% Current velocity estimation
-    sigma_surf = sqrt(g .* K .* tanh(K .* 10));
+    sigma_surf = sqrt(g .* K .* tanh(K .* h));
     sigma_wave = sqrt(g .* K .* tanh(K .* h));
 
     MTF_surf = (K.^(-1.2)) .* (W > 0) .* (image_surf_spectrum_hp > 1e-6 * max(image_surf_spectrum(:)));
@@ -153,9 +163,9 @@ for i = 1 : nFile
     uy_wave = ( b1 * b5 - b3 * b4 ) / ( b1 * b2 - b3^2 );
 
     %% BPF
-    bpv = 4 * (2*pi/Lt);
+    bpv = 8 * (2*pi/Lt);
 
-    bpMask_surf = (sqrt( g .* K .* tanh( K .* 10 ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* 10 ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) + bpv);
+    bpMask_surf = (sqrt( g .* K .* tanh( K .* h ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) + bpv);
     bpMask_wave = (sqrt( g .* K .* tanh( K .* h ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) + bpv);
 
     image_surf_spectrum_bp = image_surf_spectrum_hp .* bpMask_surf;
@@ -168,12 +178,12 @@ for i = 1 : nFile
     MTF = (K.^(-1.2)) .* (W > 0);
     MTF(~isfinite(MTF)) = 0;
 
-    signal_surf = sum(2 .* image_surf_spectrum_bp_no_windo .* MTF, 'all');
-    noise_surf = sum(image_surf_spectrum_no_windo, 'all') - sum(2 .* image_surf_spectrum_bp_no_windo .* (W > 0), 'all');
+    signal_surf = sum(2 .* image_surf_spectrum_bp.* MTF, 'all');
+    noise_surf = sum(image_surf_spectrum_no_windo, 'all') - signal_surf;
     SNR_surfVal = signal_surf / noise_surf;
 
-    signal_wave = sum(2 .* image_wave_spectrum_bp_no_windo .* MTF, 'all');
-    noise_wave = sum(image_wave_spectrum_no_windo, 'all') - sum(2 .* image_wave_spectrum_bp_no_windo .* (W > 0), 'all');
+    signal_wave = sum(2 .* image_wave_spectrum_bp .* MTF, 'all');
+    noise_wave = sum(image_wave_spectrum_no_windo, 'all') - signal_wave;
     SNR_waveVal = signal_wave / noise_wave;
 
     %% Tp
@@ -205,6 +215,8 @@ for i = 1 : nFile
     %% Save
     r_Date(i)  = dateVal;
     r_LandE(i) = LandEVal;
+    r_SurfE(i) = SurfEVal;
+    r_WaveE(i) = WaveEVal;
 
     r_surf_SNR(i)   = SNR_surfVal;
     r_surf_Ux(i)    = ux_surf;
@@ -219,10 +231,17 @@ for i = 1 : nFile
     r_wave_Pdir(i) = Pdir_surfVal;
 
     %% Check
+    disp([num2str(main), '/', num2str(i) , '/', num2str(nFile)]);
+    %disp([num2str(i) , '/', num2str(nFile)]);
     disp('surf zone');
     disp([ux_surf, uy_surf, SNR_surfVal, Tp_surfVal, Pdir_surfVal]);
     disp('wave zone');
     disp([ux_wave, uy_wave, SNR_waveVal, Tp_waveVal, Pdir_waveVal]);
 end
 
-save("snr_y1910_0406.mat", 'r_Date', 'r_LandE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy');
+toc
+
+save(['snr_y19', num2str(main), '_0406.mat'], 'r_Date', 'r_LandE', 'r_SurfE', 'r_WaveE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy');
+
+
+end
