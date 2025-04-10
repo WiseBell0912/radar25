@@ -3,7 +3,7 @@ clear; close all; clc;
 
 %% -- 1) 라벨을 저장할 배열 초기화 --
 % PNG 파일 목록 구하기
-imageDir = '/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/';       % 사용자의 이미지 폴더 경로
+imageDir = 'C:\Users\Hyeonjong Im\Documents\새 폴더\image201910\';       % 사용자의 이미지 폴더 경로
 files = dir(fullfile(imageDir, '*.png'));
 nFiles = numel(files);
 
@@ -64,15 +64,9 @@ fprintf('총 %d개 중 %d개 라벨링 완료\n', nFiles, labeledCount);
 
 %% -- 3) 라벨 데이터 저장 --
 % 3-1) MAT 파일로 저장
-labelVec = categorical(labelCell);  % 분류용이므로 categorical
+labelVec = categorical(labelCell(1:499));  % 분류용이므로 categorical
 save('labeledPngData.mat','labelVec','-v7.3');
 fprintf('labeledPngData.mat에 labelVec를 저장했습니다.\n');
-
-% 3-2) CSV로도 저장 (선택)
-T = table((1:nFiles)', {files.name}', cellstr(labelVec), ...
-    'VariableNames',{'Index','FileName','Label'});
-writetable(T, 'labelResult.csv');
-fprintf('labelResult.csv로도 내보냈습니다.\n');
 
 close(fig);
 disp('라벨링 프로세스 종료');
