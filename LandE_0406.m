@@ -143,7 +143,7 @@ rr_surf_Hs = y(1) + y(2) .* rr_surf_SNR;
 clear modelfun initial_guess options x y
 
 %% Figure 1 - PDF
-pdf_data = rr_SurfD;
+pdf_data = rr_LandD;
 
 figure(1);
 x_vals = linspace(min(pdf_data), max(pdf_data), 10000);
@@ -177,10 +177,11 @@ hold on;
 
 % 현재 y축의 한계를 얻기 위해 임의로 플롯 (아래에서 patch 적용 전에 ylimit이 설정되어야 함)
 h1 = plot(rr_Date, pdf_data);
-h2 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 0*std(pdf_data) ), 'r--');
-h3 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 1*std(pdf_data) ), 'r--');
+%h2 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 0*std(pdf_data) ), 'r--');
+%h3 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 1*std(pdf_data) ), 'r--');
 h4 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 2*std(pdf_data) ), 'r--');
-xlim([datetime(2019, 10, 1), datetime(2019, 12, 31)]);
+xlim([datetime(2019, 10, 1), datetime(2019, 10, 31)]);
+title('Land Density');
 
 % y축 한계를 가져옵니다.
 yl = ylim;
@@ -226,8 +227,8 @@ end
 
 % patch가 배경에 깔리도록 플롯 순서를 조정
 uistack(h1, 'top');
-uistack(h2, 'top');
-uistack(h3, 'top');
+%uistack(h2, 'top');
+%uistack(h3, 'top');
 uistack(h4, 'top');
 
 hold off;
@@ -248,6 +249,6 @@ txt = {sprintf('.')}; % 추가 인수 사용
 
 % 두 번째 타일에 이미지 업데이트
 nexttile(2);
-%imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
-imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+%imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
 end
