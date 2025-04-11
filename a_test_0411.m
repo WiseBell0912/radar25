@@ -1,7 +1,7 @@
 clear; clc;
 
 %% Search
-file_path = 'E:/png2019/10/';
+file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
 %file_path = 'E:/png2019/10/';
 file_list = dir([file_path, '*.png']);
 
@@ -54,8 +54,11 @@ window_t  = hann(Nt);                  % Nt
 window    = repmat(window_xy, 1, 1, Nt) .* reshape(window_t, 1, 1, Nt);
 
 %% 하이패스 필터(HPF)용 마스크 미리 계산(반복문 밖)
+%hpK = (K > 0.0156810355); % surf
+%hpK = (K > 0.0111906701); % wave
+hpK = (K > 0.03);
 hpW = (abs(W) > 2*pi*0.03);
-hpMask = hpW;
+hpMask = hpW .* hpK;
 
 %% 결과 저장용
 nFile = length(file_list);
@@ -79,9 +82,12 @@ r_wave_Pdir = zeros(nFile,1);
 
 tic
 
-for i = 785 % 반절
+%for i = 785 % 반절
 %for i = 685 % 전체
-%for i = 2564 % 전체
+%for i = 2561 % 전체
+%for i = 1145 % 없음
+%for i = 2670 % 전체
+for i = 3616 % 전체
     %% 파일 읽기 및 Zone 추출
     png_path = fullfile(file_list(i).folder, file_list(i).name);
     dateStr  = file_list(i).name(5:end-4);
@@ -107,7 +113,7 @@ for i = 785 % 반절
 
     img_spectrum = fftn(img_surf .* window);
     img_spectrum = abs(img_spectrum).^2 / Nx^2 / Ny^2 / Nt^2;
-    img_spectrum = fftshift(img_spectrum) .* hpW;
+    img_spectrum = fftshift(img_spectrum) .* hpMask;
 
     % Current
     sigma_surf = sqrt(g .* K .* tanh(K .* 15));
@@ -131,7 +137,7 @@ for i = 785 % 반절
 
         nexttile;
         hold on;
-        surf(img_surf(101:201, :, j), 'EdgeAlpha', 0);
+        surf(img_surf(:, :, j), 'EdgeAlpha', 0);
         quiver3(101, 101, max(img_surf(:)) + 10, ux_surf, uy_surf, 0, 10, 'r', 'LineWidth', 2);
         hold off;
         view(0, 90);
@@ -144,5 +150,13 @@ for i = 785 % 반절
         view(0, 90);
 
     end
+
+    max(img_spectrum(:))
+
+    image_surf_K_spectrum = sum(img_spectrum, 3) .* (Ky(:, :, 1) > 0);
+    % [~, maxidx_surf_Pdir] = max(image_surf_K_spectrum, [], "all");
+    % Pdir_surfVal = mod(90 - rad2deg(atan2(Ky(maxidx_surf_Pdir), Kx(maxidx_surf_Pdir))) + 60, 360);
+    [~, sorted_idx_surf] = sort(image_surf_K_spectrum(:), 'descend');
+    Pdir_surfVal = mean(rad2deg(atan2(Ky(sorted_idx_surf(1:5)), Kx(sorted_idx_surf(1:5)))))
 
 end
