@@ -16,7 +16,7 @@ b_Pdir = b_WaveDirection;
 b_Tp = b_MaximumWavePeriod;
 
 % Radar wave
-load("snr_y1910_0406.mat");
+load("snr_y1910_0411.mat");
 r_WaveE = WaveE;
 r_wave_Uy = wave_Uy;
 r_wave_Ux = wave_Ux;
@@ -32,7 +32,7 @@ r_surf_Pdir = surf_Pdir;
 r_LandE = LandE;
 r_Date = Date;
 
-load("snr_y1911_0406.mat");
+load("snr_y1911_0411.mat");
 r_WaveE = [r_WaveE; WaveE];
 r_wave_Uy = [r_wave_Uy; wave_Uy];
 r_wave_Ux = [r_wave_Ux; wave_Ux];
@@ -48,7 +48,7 @@ r_surf_Pdir = [r_surf_Pdir; surf_Pdir];
 r_LandE = [r_LandE; LandE];
 r_Date = [r_Date; Date];
 
-load("snr_y1912_0406.mat");
+load("snr_y1912_0411.mat");
 r_WaveE = [r_WaveE; WaveE];
 r_wave_Uy = [r_wave_Uy; wave_Uy];
 r_wave_Ux = [r_wave_Ux; wave_Ux];

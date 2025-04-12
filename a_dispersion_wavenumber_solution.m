@@ -2,7 +2,7 @@ clear; close all; clc;
 
 % 파라미터 설정
 g = 9.81;                    % 중력가속도 [m/s^2]
-d = 30;                      % 수심 [m]
+d = 15;                      % 수심 [m]
 f_th = 0.03;                 % 임계 주파수 [Hz]
 omega_th = 2 * pi * f_th;    % 임계 각진동수 [rad/s]
 
