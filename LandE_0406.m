@@ -143,7 +143,7 @@ rr_surf_Hs = y(1) + y(2) .* rr_surf_SNR;
 clear modelfun initial_guess options x y
 
 %% Figure 1 - PDF
-pdf_data = rr_LandD;
+pdf_data = rr_WaveD;
 
 figure(1);
 x_vals = linspace(min(pdf_data), max(pdf_data), 10000);
@@ -176,10 +176,10 @@ nexttile([1 1]);
 hold on;
 
 % 현재 y축의 한계를 얻기 위해 임의로 플롯 (아래에서 patch 적용 전에 ylimit이 설정되어야 함)
-h1 = plot(rr_Date, pdf_data);
+h1 = plot(rr_Date(rr_LandD < mean(rr_LandD) + 2 * std(rr_LandD)), pdf_data(rr_LandD < mean(rr_LandD) + 2 * std(rr_LandD)));
 %h2 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 0*std(pdf_data) ), 'r--');
 %h3 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 1*std(pdf_data) ), 'r--');
-h4 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 2*std(pdf_data) ), 'r--');
+h4 = plot(aasos_Date, ones(size(pdf_data))*( mean(pdf_data) + 0*std(pdf_data) ), 'r--');
 xlim([datetime(2019, 10, 1), datetime(2019, 10, 31)]);
 title('Land Density');
 

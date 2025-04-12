@@ -30,57 +30,57 @@ b_Hs = fillmissing(b_Hs, 'linear');
 load("ASOS.mat");
 
 % Radar wave
-load("snr_y1910_0411_2.mat");
+load("snr_y1910_0406.mat");
 r_WaveE = WaveE;
 r_wave_Uy = wave_Uy;
 r_wave_Ux = wave_Ux;
 r_wave_Tp = wave_Tp;
 r_wave_SNR = wave_SNR;
 r_wave_Pdir = wave_Pdir;
-r_wave_SpectrumMax = wave_SpectrumMax;
+%r_wave_SpectrumMax = wave_SpectrumMax;
 r_SurfE = SurfE;
 r_surf_Uy = surf_Uy;
 r_surf_Ux = surf_Ux;
 r_surf_Tp = surf_Tp;
 r_surf_SNR = surf_SNR;
 r_surf_Pdir = surf_Pdir;
-r_surf_SpectrumMax = surf_SpectrumMax;
+%r_surf_SpectrumMax = surf_SpectrumMax;
 r_LandE = LandE;
 r_Date = Date;
 
-load("snr_y1911_0411_2.mat");
+load("snr_y1911_0406.mat");
 r_WaveE = [r_WaveE; WaveE];
 r_wave_Uy = [r_wave_Uy; wave_Uy];
 r_wave_Ux = [r_wave_Ux; wave_Ux];
 r_wave_Tp = [r_wave_Tp; wave_Tp];
 r_wave_SNR = [r_wave_SNR; wave_SNR];
 r_wave_Pdir = [r_wave_Pdir; wave_Pdir];
-r_wave_SpectrumMax = [r_wave_SpectrumMax; wave_SpectrumMax];
+%r_wave_SpectrumMax = [r_wave_SpectrumMax; wave_SpectrumMax];
 r_SurfE = [r_SurfE; SurfE];
 r_surf_Uy = [r_surf_Uy; surf_Uy];
 r_surf_Ux = [r_surf_Ux; surf_Ux];
 r_surf_Tp = [r_surf_Tp; surf_Tp];
 r_surf_SNR = [r_surf_SNR; surf_SNR];
 r_surf_Pdir = [r_surf_Pdir; surf_Pdir];
-r_surf_SpectrumMax = [r_surf_SpectrumMax; surf_SpectrumMax];
+%r_surf_SpectrumMax = [r_surf_SpectrumMax; surf_SpectrumMax];
 r_LandE = [r_LandE; LandE];
 r_Date = [r_Date; Date];
 
-load("snr_y1912_0411_2.mat");
+load("snr_y1912_0406.mat");
 r_WaveE = [r_WaveE; WaveE];
 r_wave_Uy = [r_wave_Uy; wave_Uy];
 r_wave_Ux = [r_wave_Ux; wave_Ux];
 r_wave_Tp = [r_wave_Tp; wave_Tp];
 r_wave_SNR = [r_wave_SNR; wave_SNR];
 r_wave_Pdir = [r_wave_Pdir; wave_Pdir];
-r_wave_SpectrumMax = [r_wave_SpectrumMax; wave_SpectrumMax];
+%r_wave_SpectrumMax = [r_wave_SpectrumMax; wave_SpectrumMax];
 r_SurfE = [r_SurfE; SurfE];
 r_surf_Uy = [r_surf_Uy; surf_Uy];
 r_surf_Ux = [r_surf_Ux; surf_Ux];
 r_surf_Tp = [r_surf_Tp; surf_Tp];
 r_surf_SNR = [r_surf_SNR; surf_SNR];
 r_surf_Pdir = [r_surf_Pdir; surf_Pdir];
-r_surf_SpectrumMax = [r_surf_SpectrumMax; surf_SpectrumMax];
+%r_surf_SpectrumMax = [r_surf_SpectrumMax; surf_SpectrumMax];
 r_LandE = [r_LandE; LandE];
 r_Date = [r_Date; Date];
 
@@ -151,9 +151,9 @@ t = tiledlayout(2,3);
 a = nexttile([1 3]);
 hold on;
 % yyaxis left
-plot(bb_Date, movmean(bb_Hs, 1), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-');
-plot(rr_Date, movmean(rr_wave_Hs, 1), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-');
-plot(rr_Date, movmean(rr_surf_Hs, 1), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-');
+%plot(bb_Date, movmean(bb_Hs, 1), 'Color', [0, 0, 0, 0.8], 'LineStyle', '-');
+plot(rr_Date(rr_wave_SNR > 0.1), rr_wave_SNR(rr_wave_SNR > 0.1), 'Color', [1, 0, 0, 0.8], 'LineStyle', '-');
+%plot(rr_Date(rr_surf_SNR < 0.1), rr_surf_SNR(rr_surf_SNR < 0.1), 'Color', [0, 0, 1, 0.8], 'LineStyle', '-');
 ylabel("Hs [m]");
 % yyaxis right
 % plot(b2r_Date, movmean(b2r_Wind, 3), 'Color', [0.9, 0.2, 0.9, 0.7], 'LineStyle', '-.');
@@ -161,10 +161,11 @@ ylabel("Hs [m]");
 hold off;
 
 set(gcf, 'Position', [0, 0, 1820, 980]);
-xlim([datetime(2019, 10, 1), datetime(2019, 10, 4)]);
+%xlim([datetime(2019, 10, 1), datetime(2019, 10, 4)]);
 title("Significant Wave Height", "FontSize", 15);
 xlabel("Date [mm dd]");
-legend('Bouy', 'Wave', 'Surf');
+%legend('Wave', 'Surf');
+%legend('Bouy', 'Wave', 'Surf');
 % legend('Bouy', 'Wave', 'Surf', 'Wind Velocity');
 
 
