@@ -143,7 +143,7 @@ rr_surf_Hs = y(1) + y(2) .* rr_surf_SNR;
 clear modelfun initial_guess options x y
 
 %% Figure 1 - PDF
-pdf_data = rr_WaveD;
+pdf_data = rr_SurfD;
 
 figure(1);
 x_vals = linspace(min(pdf_data), max(pdf_data), 10000);
@@ -249,6 +249,6 @@ txt = {sprintf('.')}; % 추가 인수 사용
 
 % 두 번째 타일에 이미지 업데이트
 nexttile(2);
-imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
-%imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+%imshow(['/Users/limhyeonjong/Documents/Personal/GraduateProject/Image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
+imshow(['C:/Users/Hyeonjong Im/Documents/새 폴더/image/Image_', datestr(clickedDate, 'yyyymmdd_HHMM'), '.png']);
 end
