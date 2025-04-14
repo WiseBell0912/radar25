@@ -58,7 +58,7 @@ mOut.img_energy = zeros(67, 167, nFile, 'single');
 
 tic
 
-for i = 1 : nFile
+parfor i = 1 : nFile
 
     %% 파일 읽기 및 Zone 추출
     png_path = fullfile(file_list(i).folder, file_list(i).name);
