@@ -7,7 +7,8 @@ date_find_idx = find(Date == date_find_val);
 
 %% Search
 %file_path = '/mnt/usb/png2019/';
-file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
+%file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
+file_path = 'E:/png2019/10/';
 file_list = dir([file_path, 'AIB_201910*.png']);
 
 %% Information of Zone
@@ -83,7 +84,7 @@ wave_meanW = zeros(nFile, 1);
 
 
 
-for date_find_idx = 1 : 1
+for date_find_idx = 1 : nFile
 
 %% 파일 읽기 및 Zone 추출
 png_path = fullfile(file_list(date_find_idx).folder, file_list(date_find_idx).name);
