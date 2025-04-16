@@ -42,7 +42,7 @@ nexttile([1, 4]);
 rs_surf_maxW = rescale(surf_maxW, 0, 1);
 rs_surf_maxW = rs_surf_maxW(filter);
 plot(Date(filter), abs(rs_surf_maxW - rs_surf_maxK));
-%yline(mean(rs_surf_maxW), 'r--');
+yline(mean(abs(rs_surf_maxW - rs_surf_maxK)), 'r--');
 title('surf max W');
 % ylim([0, 6]);
 
@@ -55,7 +55,7 @@ nexttile([1, 4]);
 rs_wave_maxW = rescale(wave_maxW, 0, 1);
 rs_wave_maxW = rs_wave_maxW(filter);
 plot(Date(filter), abs(rs_wave_maxW - rs_wave_maxK));
-%yline(mean(rs_wave_maxW), 'r--');
+yline(mean(abs(rs_wave_maxW - rs_wave_maxK)), 'r--');
 title('wave max W');
 % ylim([0, 6]);
 
