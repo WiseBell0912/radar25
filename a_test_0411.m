@@ -1,6 +1,6 @@
 clear; clc;
 
-for main = 10 : 12
+for main = 10 : 10
         clearvars -except main
 
 %% Search
@@ -80,14 +80,16 @@ surf_Ux    = zeros(nFile,1);
 surf_Uy    = zeros(nFile,1);
 surf_Tp   = zeros(nFile,1);
 surf_Pdir = zeros(nFile,1);
-surf_SpectrumMax = zeros(nFile,1);
+surf_Peakiness = zeros(nFile,1);
+surf_Entropy = zeros(nFile,1);
 
 wave_SNR   = zeros(nFile,1);
 wave_Ux    = zeros(nFile,1);
 wave_Uy    = zeros(nFile,1);
 wave_Tp   = zeros(nFile,1);
 wave_Pdir = zeros(nFile,1);
-wave_SpectrumMax = zeros(nFile,1);
+wave_Peakiness = zeros(nFile,1);
+wave_Entropy = zeros(nFile,1);
 
 tic
 
@@ -139,8 +141,13 @@ parfor i = 1 : nFile
     img_spectrum_wave_HP = img_spectrum_wave .* hpMask_wave;
 
     % 저장
-    SpectrumMax_surfVal = max(img_spectrum_surf_HP(:));
-    SpectrumMax_waveVal = max(img_spectrum_wave_HP(:));
+    Peakiness_surfVal = max(sum(img_spectrum_surf_HP, 3), [], 'all') / mean(sum(img_spectrum_surf_HP, 3), 'all');
+    Peakiness_waveVal = max(sum(img_spectrum_wave_HP, 3), [], 'all') / mean(sum(img_spectrum_wave_HP, 3), 'all');
+
+    aaa = sum(img_spectrum_surf_HP, 3);
+    Entropy_surfVal = -sum(aaa(:) .* log(aaa(:) + eps));
+    bbb = sum(img_spectrum_wave_HP, 3);
+    Entropy_waveVal = -sum(bbb(:) .* log(bbb(:) + eps));
 
     %% 유속 추정
     sigma_surf = sqrt(g .* K .* tanh(K .* h_surf));
@@ -217,20 +224,20 @@ parfor i = 1 : nFile
     % end
 
     %% BPF
-    bpv = 8 * (2*pi/Lt);
+    bpv = 16 * (2*pi/Lt);
 
     bpMask_surf = (sqrt( g .* K .* tanh( K .* h_surf ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h_surf ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) + bpv);
     bpMask_wave = (sqrt( g .* K .* tanh( K .* h_wave ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h_wave ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) + bpv);
 
-    img_spectrum_surf_BP = img_spectrum_surf_no_win .* bpMask_surf;
-    img_spectrum_wave_BP = img_spectrum_wave_no_win .* bpMask_wave;
+    img_spectrum_surf_BP = img_spectrum_surf_HP .* bpMask_surf;
+    img_spectrum_wave_BP = img_spectrum_wave_HP .* bpMask_wave;
 
     %% SNR
     signal_surf = sum(img_spectrum_surf_BP, 'all');
-    noise_surf = sum(img_spectrum_surf_no_win, 'all') - signal_surf;
+    noise_surf = sum(img_spectrum_surf, 'all') - signal_surf;
 
     signal_wave = sum(img_spectrum_wave_BP, 'all');
-    noise_wave = sum(img_spectrum_wave_no_win, 'all') - signal_wave;
+    noise_wave = sum(img_spectrum_wave, 'all') - signal_wave;
 
     % 저장
     SNR_surfVal = signal_surf / noise_surf;
@@ -273,14 +280,16 @@ parfor i = 1 : nFile
     surf_Uy(i)    = Uy_surfVal;
     surf_Tp(i)   = Tp_surfVal;
     surf_Pdir(i) = Pdir_surfVal;
-    surf_SpectrumMax(i) = SpectrumMax_surfVal;
+    surf_Peakiness(i) = Peakiness_surfVal;
+    surf_Entropy(i) = Entropy_surfVal;
     
     wave_SNR(i)   = SNR_waveVal;
     wave_Ux(i)    = Ux_waveVal;
     wave_Uy(i)    = Uy_waveVal;
     wave_Tp(i)   = Tp_waveVal;
     wave_Pdir(i) = Pdir_waveVal;
-    wave_SpectrumMax(i) = SpectrumMax_waveVal;
+    wave_Peakiness(i) = Peakiness_waveVal;
+    wave_Entropy(i) = Entropy_waveVal;
 
     %% 확인
     disp([num2str(i) '/' num2str(main)]);
@@ -289,7 +298,7 @@ parfor i = 1 : nFile
 
 end
 
-save(['snr_y19', num2str(main), '_0412.mat'], 'Date', 'LandE', 'SurfE', 'WaveE', 'surf_Pdir', 'surf_SNR', 'surf_Tp', 'surf_Ux', 'surf_Uy', 'surf_SpectrumMax', 'wave_Pdir', 'wave_SNR', 'wave_Tp', 'wave_Ux', 'wave_Uy', 'wave_SpectrumMax');
+save(['snr_y19', num2str(main), '_0416.mat'], 'Date', 'LandE', 'SurfE', 'WaveE', 'surf_Pdir', 'surf_SNR', 'surf_Tp', 'surf_Ux', 'surf_Uy', 'surf_Peakiness', 'surf_Entropy', 'wave_Pdir', 'wave_SNR', 'wave_Tp', 'wave_Ux', 'wave_Uy', 'wave_Peakiness', 'wave_Entropy');
 
 end
 toc

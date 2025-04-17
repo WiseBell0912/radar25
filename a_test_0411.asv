@@ -139,8 +139,8 @@ parfor i = 1 : nFile
     img_spectrum_wave_HP = img_spectrum_wave .* hpMask_wave;
 
     % 저장
-    SpectrumMax_surfVal = max(img_spectrum_surf_HP(:));
-    SpectrumMax_waveVal = max(img_spectrum_wave_HP(:));
+    Peakiness_surfVal = max(sum(img_spectrum_surf_HP, 3), [], 'all') / max(sum(img_spectrum_surf_HP, 3), [], 'all');
+    Peakiness_waveVal = max(sum(img_spectrum_wave_HP, 3), [], 'all');
 
     %% 유속 추정
     sigma_surf = sqrt(g .* K .* tanh(K .* h_surf));
@@ -176,45 +176,45 @@ parfor i = 1 : nFile
     Uy_waveVal = uy_wave;
 
     %% View
-    for j = 1 : 1
-
-        figure(1);
-        set(gcf, 'Position', [0, 0, 1000, 1000]);
-        tiledlayout(2, 2);
-
-        nexttile;
-        hold on;
-        surf(img_surf(:, :, j), 'EdgeAlpha', 0);
-        quiver3(101, 101, max(img_surf(:)) + 10, ux_surf, uy_surf, 0, 20, 'r', 'LineWidth', 2);
-        hold off;
-        view(0, 90);
-        title('surf zone');
-
-        nexttile;
-        hold on;
-        surf(sum(img_spectrum_surf_HP, 3), 'EdgeAlpha', 0);
-        quiver3(101, 101, max(img_spectrum_surf_HP(:)) + 10, ux_surf, uy_surf, 0, 20, 'r', 'LineWidth', 2);
-        hold off;
-        view(0, 90);
-        title(['Ux = ', num2str(round(ux_surf, 2)), ' & ', 'Uy = ', num2str(round(uy_surf, 2))]);
-
-        nexttile;
-        hold on;
-        surf(img_wave(:, :, j), 'EdgeAlpha', 0);
-        quiver3(101, 101, max(img_wave(:)) + 10, ux_wave, uy_wave, 0, 20, 'r', 'LineWidth', 2);
-        hold off;
-        view(0, 90);
-        title('wave zone');
-
-        nexttile;
-        hold on;
-        surf(sum(img_spectrum_wave_HP, 3), 'EdgeAlpha', 0);
-        quiver3(101, 101, max(img_spectrum_wave_HP(:)) + 10, ux_wave, uy_wave, 0, 20, 'r', 'LineWidth', 2);
-        hold off;
-        view(0, 90);
-        title(['Ux = ', num2str(round(ux_wave, 2)), ' & ', 'Uy = ', num2str(round(uy_wave, 2))]);
-
-    end
+    % for j = 1 : 1
+    % 
+    %     figure(1);
+    %     set(gcf, 'Position', [0, 0, 1000, 1000]);
+    %     tiledlayout(2, 2);
+    % 
+    %     nexttile;
+    %     hold on;
+    %     surf(img_surf(:, :, j), 'EdgeAlpha', 0);
+    %     quiver3(101, 101, max(img_surf(:)) + 10, ux_surf, uy_surf, 0, 20, 'r', 'LineWidth', 2);
+    %     hold off;
+    %     view(0, 90);
+    %     title('surf zone');
+    % 
+    %     nexttile;
+    %     hold on;
+    %     surf(sum(img_spectrum_surf_HP, 3), 'EdgeAlpha', 0);
+    %     quiver3(101, 101, max(img_spectrum_surf_HP(:)) + 10, ux_surf, uy_surf, 0, 20, 'r', 'LineWidth', 2);
+    %     hold off;
+    %     view(0, 90);
+    %     title(['Ux = ', num2str(round(ux_surf, 2)), ' & ', 'Uy = ', num2str(round(uy_surf, 2))]);
+    % 
+    %     nexttile;
+    %     hold on;
+    %     surf(img_wave(:, :, j), 'EdgeAlpha', 0);
+    %     quiver3(101, 101, max(img_wave(:)) + 10, ux_wave, uy_wave, 0, 20, 'r', 'LineWidth', 2);
+    %     hold off;
+    %     view(0, 90);
+    %     title('wave zone');
+    % 
+    %     nexttile;
+    %     hold on;
+    %     surf(sum(img_spectrum_wave_HP, 3), 'EdgeAlpha', 0);
+    %     quiver3(101, 101, max(img_spectrum_wave_HP(:)) + 10, ux_wave, uy_wave, 0, 20, 'r', 'LineWidth', 2);
+    %     hold off;
+    %     view(0, 90);
+    %     title(['Ux = ', num2str(round(ux_wave, 2)), ' & ', 'Uy = ', num2str(round(uy_wave, 2))]);
+    % 
+    % end
 
     %% BPF
     bpv = 8 * (2*pi/Lt);
@@ -222,8 +222,8 @@ parfor i = 1 : nFile
     bpMask_surf = (sqrt( g .* K .* tanh( K .* h_surf ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h_surf ) ) + (Kx .* ux_surf) + (Ky .* uy_surf) + bpv);
     bpMask_wave = (sqrt( g .* K .* tanh( K .* h_wave ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) - bpv <= abs(W)) & (abs(W) <= sqrt( g .* K .* tanh( K .* h_wave ) ) + (Kx .* ux_wave) + (Ky .* uy_wave) + bpv);
 
-    img_spectrum_surf_BP = img_spectrum_surf_HP .* bpMask_surf;
-    img_spectrum_wave_BP = img_spectrum_wave_HP .* bpMask_wave;
+    img_spectrum_surf_BP = img_spectrum_surf_no_win .* bpMask_surf;
+    img_spectrum_wave_BP = img_spectrum_wave_no_win .* bpMask_wave;
 
     %% SNR
     signal_surf = sum(img_spectrum_surf_BP, 'all');
@@ -246,8 +246,8 @@ parfor i = 1 : nFile
     [~, sorted_idx_wave] = sort(img_spectrum_wave_W, 'descend');
 
     % 저장
-    Tp_surfVal = 2 * pi / w(sorted_idx_surf(1:2));
-    Tp_waveVal = 2 * pi / w(sorted_idx_surf(1:2));
+    Tp_surfVal = mean(2 * pi ./ w(sorted_idx_surf(1:2)));
+    Tp_waveVal = mean(2 * pi ./ w(sorted_idx_wave(1:2)));
 
     %% Pdir
     img_spectrum_surf_K = sum(img_spectrum_surf_BP, 3) .* (Ky(:, :, 1) > 0);
@@ -273,14 +273,14 @@ parfor i = 1 : nFile
     surf_Uy(i)    = Uy_surfVal;
     surf_Tp(i)   = Tp_surfVal;
     surf_Pdir(i) = Pdir_surfVal;
-    surf_SpectrumMax(i) = SpectrumMax_surfVal;
+    surf_SpectrumMax(i) = Peakiness_surfVal;
     
     wave_SNR(i)   = SNR_waveVal;
     wave_Ux(i)    = Ux_waveVal;
     wave_Uy(i)    = Uy_waveVal;
     wave_Tp(i)   = Tp_waveVal;
     wave_Pdir(i) = Pdir_waveVal;
-    wave_SpectrumMax(i) = SpectrumMax_waveVal;
+    wave_SpectrumMax(i) = Peakiness_waveVal;
 
     %% 확인
     disp([num2str(i) '/' num2str(main)]);
