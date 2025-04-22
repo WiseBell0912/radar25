@@ -58,7 +58,7 @@ mOut.img_energy = zeros(67, 167, nFile, 'single');
 
 tic
 
-parfor i = 1 : nFile
+for i = 1 : nFile
 
     %% 파일 읽기 및 Zone 추출
     png_path = fullfile(file_list(i).folder, file_list(i).name);
@@ -100,6 +100,3 @@ parfor i = 1 : nFile
 end
 
 end
-toc
-
-system('shutdown -s -t 300');  % 60초 후 자동 종료
