@@ -1,11 +1,11 @@
 clear; clc;
-%for main = 10 : 12
-%clearvars -except main
+for main = 10 : 12
+clearvars -except main
 
 
 %% Search
-file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
-%file_path = ['E:/png2019/',num2str(main), '/'];
+%file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
+file_path = ['E:/png2019/',num2str(main), '/'];
 %file_path = 'E:/png2019/10/';
 file_list = dir([file_path, '*.png']);
 
@@ -71,6 +71,16 @@ r_LandE = zeros(nFile,1);
 r_SurfE = zeros(nFile,1);
 r_WaveE = zeros(nFile,1);
 
+r_surf_K_max = zeros(nFile,1);
+r_surf_K_mean = zeros(nFile,1);
+r_surf_W_max = zeros(nFile,1);
+r_surf_W_mean = zeros(nFile,1);
+
+r_wave_K_max = zeros(nFile,1);
+r_wave_K_mean = zeros(nFile,1);
+r_wave_W_max = zeros(nFile,1);
+r_wave_W_mean = zeros(nFile,1);
+
 r_surf_SNR   = zeros(nFile,1);
 r_surf_Ux    = zeros(nFile,1);
 r_surf_Uy    = zeros(nFile,1);
@@ -85,7 +95,7 @@ r_wave_Pdir = zeros(nFile,1);
 
 tic
 
-for i = 500 : nFile
+for i = 1 : nFile
     %% 파일 읽기 및 Zone 추출
     png_path = fullfile(file_list(i).folder, file_list(i).name);
     dateStr  = file_list(i).name(5:end-4);
@@ -201,7 +211,7 @@ for i = 500 : nFile
     % % hold off;
     % % view(0, 90);
     % % axis equal;
-    % % xlim([1, 201]); ylim([1, 201]);ㄴ
+    % % xlim([1, 201]); ylim([1, 201]);
 
     %% BPF
     bpv = 1 * (2*pi/Lt);
@@ -216,12 +226,12 @@ for i = 500 : nFile
     image_wave_spectrum_bp_no_windo = image_wave_spectrum_hp_no_windo .* bpMask_wave;
 
     %% SNR
-    signal_surf = sum(image_surf_spectrum_bp, 'all');
-    noise_surf = sum(image_surf_spectrum_hp, 'all') - signal_surf;
+    signal_surf = sum(image_surf_spectrum_bp_no_windo, 'all');
+    noise_surf = sum(image_surf_spectrum_hp_no_windo, 'all') - signal_surf;
     SNR_surfVal = signal_surf / noise_surf;
 
-    signal_wave = sum(image_wave_spectrum_bp, 'all');
-    noise_wave = sum(image_wave_spectrum_hp, 'all') - signal_wave;
+    signal_wave = sum(image_wave_spectrum_bp_no_windo, 'all');
+    noise_wave = sum(image_wave_spectrum_hp_no_windo, 'all') - signal_wave;
     SNR_waveVal = signal_wave / noise_wave;
 
     %% Tp
@@ -276,6 +286,16 @@ for i = 500 : nFile
     r_SurfE(i) = SurfEVal;
     r_WaveE(i) = WaveEVal;
 
+    r_surf_K_max(i) = surf_K_max;
+    r_surf_K_mean(i) = surf_K_mean;
+    r_surf_W_max(i) = surf_W_max;
+    r_surf_W_mean(i) = surf_W_mean;
+
+    r_wave_K_max(i) = wave_K_max;
+    r_wave_K_mean(i) = wave_K_mean;
+    r_wave_W_max(i) = wave_W_max;
+    r_wave_W_mean(i) = wave_W_mean;
+
     r_surf_SNR(i)   = SNR_surfVal;
     r_surf_Ux(i)    = ux_surf;
     r_surf_Uy(i)    = uy_surf;
@@ -289,19 +309,21 @@ for i = 500 : nFile
     r_wave_Pdir(i) = Pdir_surfVal;
 
     %% Check
-    disp([num2str(i) , '/', num2str(nFile)]);
-    %disp([num2str(main), '/', num2str(i) , '/', num2str(nFile)]);
+    %disp([num2str(i) , '/', num2str(nFile)]);
+    disp([num2str(main), '/', num2str(i) , '/', num2str(nFile)]);
     disp('surf zone');
-    disp([SNR_surfVal]);
+    disp([ux_surf, uy_surf, SNR_surfVal]);
     disp('wave zone');
-    disp([SNR_waveVal]);
+    disp([ux_wave, uy_wave, SNR_waveVal]);
 end
 
 toc
 
 
-save('snr_y1910_0406.mat', 'r_Date', 'r_LandE', 'r_SurfE', 'r_WaveE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy');
-%save(['snr_y19', num2str(main), '_0406.mat'], 'r_Date', 'r_LandE', 'r_SurfE', 'r_WaveE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy');
+%save('snr_y1910_0406.mat', 'r_Date', 'r_LandE', 'r_SurfE', 'r_WaveE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy', 'r_surf_W_max', 'r_surf_W_mean', 'r_wave_K_max', 'r_wave_K_mean', 'r_wave_W_max', 'r_wave_W_mean', 'r_surf_K_max', 'r_surf_K_mean');
+save(['snr_y19', num2str(main), '_0422.mat'], 'r_Date', 'r_LandE', 'r_SurfE', 'r_WaveE', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy', 'r_surf_W_max', 'r_surf_W_mean', 'r_wave_K_max', 'r_wave_K_mean', 'r_wave_W_max', 'r_wave_W_mean', 'r_surf_K_max', 'r_surf_K_mean');
 
 
-%end
+end
+
+system('shutdown -s -t 600');
