@@ -1,10 +1,7 @@
 clear; close all; clc;
 
 %% Search
-%file_path = 'E:/png2019/10/';
-%file_path = '/Users/limhyeonjong/Documents/Personal/GraduateProject/png2019/10/';
-file_path = '/media/zerog/EA168F94168F6085/png2020/';
-
+file_path = 'E:/png2019/10/';
 file_list = dir([file_path, '*.png']);
 
 %% Information of Zone
@@ -18,7 +15,7 @@ wave_theta1 = deg2rad(90);
 wave_theta2 = deg2rad(145);
 wave_center = 1150 + 600/2;
 
-%% Input parameter
+%% input parameter
 Nx = 201;
 Ny = 201;
 Nt = 128;
@@ -42,6 +39,7 @@ mdeg = 5;            % 예시: 5도
 kx = -pi/dx : 2*pi/Lx : pi/dx;
 ky = -pi/dy : 2*pi/Ly : pi/dy;
 w  = -pi/dt : 2*pi/Lt : pi/dt;
+% 원래 코드대로 w(65)를 제거
 w(65) = [];
 
 [Kx, Ky, W] = meshgrid(ky, kx, w);
@@ -387,17 +385,17 @@ parfor i = 1 : nFile
     PdirVal = mod((90 - rad2deg(atan2(kyDir, kxDir))) - rad2deg(beta) - mdeg, 360);
 
     %% 결과 저장
-    r_Date(i)  = dateVal;
+    r_Date(i)  = NaT(nFile,1);
 
     r_surf_SNR(i)   = snr_surfVal;
-    r_surf_Ux(i)    = ux_surf;
-    r_surf_Uy(i)    = uy_surf;
+    r_surf_Ux(i)    = zeros(nFile,1);
+    r_surf_Uy(i)    = zeros(nFile,1);
     r_surf_Tp(i)   = Tp_surfVal;
     r_surf_Pdir(i) = Pdir_surfVal;
 
-    r_wave_SNR(i)   = snr_waveVal;
-    r_wave_Ux(i)    = ux_wave;
-    r_wave_Uy(i)    = uy_wave;
+    r_wave_SNR(i)   = snr_waveVal
+    r_wave_Ux(i)    = zeros(nFile,1);
+    r_wave_Uy(i)    = uy
     r_wave_Tp(i)   = Tp_waveVal;
     r_wave_Pdir(i) = Pdir_waveVal;
 
@@ -406,4 +404,4 @@ end
 
 toc;
 
-save("snr_y2020_0327.mat", 'r_Date', 'r_surf_Pdir', 'r_surf_SNR', 'r_surf_Tp', 'r_surf_Ux', 'r_surf_Uy', 'r_wave_Pdir', 'r_wave_SNR', 'r_wave_Tp', 'r_wave_Ux', 'r_wave_Uy');
+save("snr_y1910_surf_0327.mat", 'Date', 'SNR', 'Ux', 'Uy', 'Tp', 'Pdir');

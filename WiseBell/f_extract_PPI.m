@@ -15,6 +15,6 @@ for i = 1 : 1
     axis([-2500 2500 -2500 2500]);
     view(0, 90);
     hold on;
-    surf(x(:, 365:385, i), y(:, 365:385, i), png_long(:, 365:385, i));
+    %surf(x(:, 365:385, i), y(:, 365:385, i), png_long(:, 365:385, i));
     hold off;
 end

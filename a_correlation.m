@@ -4,73 +4,40 @@ load('BOUY.mat');
 
 load("ASOS.mat");
 
-load("ADCP.mat");
-a_Date = a_Date02;
-a_Hs = a_Hs02;
-a_Pdir = a_Pdir02;
-a_Tp = a_Tp02;
+load("snr_y2020_0423.mat");
 
-file_list = dir('./0327/*.mat');
+mask1 = ismember(r_Date, b_Date);
+mask2 = ismember(r_Date, asos_Date);
+mask = mask1 & mask2;
 
-for i = 1 : length(file_list)
-    load([file_list(i).folder, '/', file_list(i).name]);
-    if i == 1
-        r_surf_Date = Date;
-        r_surf_Pdir = Pdir;
-        r_surf_SNR = SNR;
-        r_surf_Tp = Tp;
-        r_surf_Ux = Ux;
-        r_surf_Uy = Uy;
-    elseif i ==2
-        r_wave_Date = Date;
-        r_wave_Pdir = Pdir;
-        r_wave_SNR = SNR;
-        r_wave_Tp = Tp;
-        r_wave_Ux = Ux;
-        r_wave_Uy = Uy;
-    elseif mod(i, 2) == 1
-        r_surf_Date = [r_surf_Date ; Date];
-        r_surf_Pdir = [r_surf_Pdir ; Pdir];
-        r_surf_SNR = [r_surf_SNR ; SNR];
-        r_surf_Tp = [r_surf_Tp ; Tp];
-        r_surf_Ux = [r_surf_Ux ; Ux];
-        r_surf_Uy = [r_surf_Uy ; Uy];
-    elseif mod(i, 2) == 0
-        r_wave_Date = [r_wave_Date ; Date];
-        r_wave_Pdir = [r_wave_Pdir ; Pdir];
-        r_wave_SNR = [r_wave_SNR ; SNR];
-        r_wave_Tp = [r_wave_Tp ; Tp];
-        r_wave_Ux = [r_wave_Ux ; Ux];
-        r_wave_Uy = [r_wave_Uy ; Uy];
-    end
-end
-
-clear file_list i Date Pdir SNR Tp Ux Uy
-
-mask1 = ismember(r_surf_Date, b_Date);
-mask2 = ismember(r_surf_Date, asos_Date);
-mask3 = ismember(r_surf_Date, a_Date);
-mask = mask1 & mask2 & mask3;
-
-r_surf_Date = r_surf_Date(mask);
+r_Date = r_Date(mask);
 r_surf_Pdir = r_surf_Pdir(mask);
 r_surf_SNR = r_surf_SNR(mask);
 r_surf_Tp = r_surf_Tp(mask);
 r_surf_Ux = r_surf_Ux(mask);
 r_surf_Uy = r_surf_Uy(mask);
-r_wave_Date = r_wave_Date(mask);
 r_wave_Pdir = r_wave_Pdir(mask);
 r_wave_SNR = r_wave_SNR(mask);
 r_wave_Tp = r_wave_Tp(mask);
 r_wave_Ux = r_wave_Ux(mask);
 r_wave_Uy = r_wave_Uy(mask);
+r_LandE = r_LandE(mask);
+r_WaveE = r_WaveE(mask);
+r_SurfE = r_SurfE(mask);
+r_surf_K_max = r_surf_K_max(mask);
+r_surf_K_mean = r_surf_K_mean(mask);
+r_surf_W_max = r_surf_W_max(mask);
+r_surf_W_mean = r_surf_W_mean(mask);
+r_wave_K_max = r_wave_K_max(mask);
+r_wave_K_mean = r_wave_K_mean(mask);
+r_wave_W_max = r_wave_W_max(mask);
+r_wave_W_mean = r_wave_W_mean(mask);
 
-clear mask1 mask2 mask3 mask
+clear mask1 mask2 mask
 
-mask1 = ismember(b_Date, r_surf_Date);
+mask1 = ismember(b_Date, r_Date);
 mask2 = ismember(b_Date, asos_Date);
-mask3 = ismember(b_Date, a_Date);
-mask = mask1 & mask2 & mask3;
+mask = mask1 & mask2;
 
 b_AirTemperature = b_AirTemperature(mask);
 b_AtmosphericPressure = b_AtmosphericPressure(mask);
@@ -88,29 +55,16 @@ b_WindDirectiondeg = b_WindDirectiondeg(mask);
 b_WindSpeed = b_WindSpeed(mask);
 b_WaveDirection = b_WaveDirection(mask);
 
-clear mask1 mask2 mask3 mask
+clear mask1 mask2 mask
 
-mask1 = ismember(asos_Date, r_surf_Date);
+mask1 = ismember(asos_Date, r_Date);
 mask2 = ismember(asos_Date, b_Date);
-mask3 = ismember(asos_Date, a_Date);
-mask = mask1 & mask2 & mask3;
+mask = mask1 & mask2;
 
 asos_Date = asos_Date(mask);
 asos_Precipitation = asos_Precipitation(mask);
 
-clear mask1 mask2 mask3 mask
-
-mask1 = ismember(a_Date, r_surf_Date);
-mask2 = ismember(a_Date, b_Date);
-mask3 = ismember(a_Date, asos_Date);
-mask = mask1 & mask2 & mask3;
-
-a_Date = a_Date(mask);
-a_Hs = a_Hs(mask);
-a_Pdir = a_Pdir(mask);
-a_Tp = a_Tp(mask);
-
-clear mask1 mask2 mask3 mask
+clear mask1 mask2 mask
 
 r_surf_U = sqrt(r_surf_Ux.^2 + r_surf_Uy.^2);
 r_wave_U = sqrt(r_wave_Ux.^2 + r_wave_Uy.^2);
@@ -121,7 +75,6 @@ b_AtmosphericPressure, ...
 double(b_CurrentDirection16Points), ...
 b_CurrentDirectiondeg, ...
 b_CurrentSpeed, ...
-datenum(b_Date), ...
 b_MaximumWaveHeight, ...
 b_MaximumWavePeriod, ...
 b_SignificantWaveHeight, ...
@@ -139,10 +92,19 @@ r_wave_Pdir, ...
 r_wave_SNR, ...
 r_wave_Tp, ...
 r_wave_U, ...
+r_LandE, ...
+r_WaveE, ...
+r_SurfE, ...
+r_surf_K_max, ...
+r_surf_K_mean, ...
+r_surf_W_max, ...
+r_surf_W_mean, ...
+r_wave_K_max, ...
+r_wave_K_mean, ...
+r_wave_W_max, ...
+r_wave_W_mean, ...
 asos_Precipitation, ...
-a_Hs, ...
-a_Pdir, ...
-a_Tp ...
+(asos_Precipitation > 0)
 ];
 
 varNames = { ...
@@ -151,7 +113,6 @@ varNames = { ...
 ' b CurrentDirection16Points', ...
 ' b CurrentDirectiondeg', ...
 ' b CurrentSpeed', ...
-' b Date', ...
 ' b MaximumWaveHeight', ...
 ' b MaximumWavePeriod', ...
 ' b SignificantWaveHeight', ...
@@ -169,10 +130,19 @@ varNames = { ...
 ' r wave SNR', ...
 ' r wave Tp', ...
 ' r wave U', ...
+' r LandE', ...
+' r WaveE', ...
+' r SurfE', ...
+' r surf K max', ...
+' r surf K mean', ...
+' r surf W max', ...
+' r surf W mean', ...
+' r wave K max', ...
+' r wave K mean', ...
+' r wave W max', ...
+' r wave W mean', ...
 ' asos Precipitation', ...
-' a Hs', ...
-' a Pdir', ...
-' a Tp' ...
+' asos RainTF'
 };
 
 R = corrcoef(data, 'Rows', 'pairwise');

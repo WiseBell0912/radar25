@@ -8,8 +8,8 @@ theta = linspace(0 - modifiy_theta, 2*pi - modifiy_theta, 1080);
 zone_lenght_x = 600;
 zone_length_y = 600;
 
-zx = -zone_lenght_x/2 : 3 : zone_lenght_x/2;
-zy = -zone_length_y/2 : 3 : zone_length_y/2;
+zx = -zone_lenght_x/2 : 3 : zone_lenght_x/2 - 3;
+zy = -zone_length_y/2 : 3 : zone_length_y/2 - 3;
 [Zx_sub, Zy_sub] = meshgrid(zx, zy);
 
 % Surf zone
@@ -23,7 +23,7 @@ temp = surf_Zx_real + surf_Zy_real * 1i;
 temp_r = abs(temp);
 temp_th = angle(temp);
 temp_th = mod(modifiy_theta + temp_th, 2*pi);
-pngsurf = zeros(201, 201, 128);
+pngsurf = zeros(length(zx), length(zy), 128);
 pngsurf = double(pngsurf);
 
 for i = 1 : 128
@@ -47,7 +47,7 @@ temp = wave_Zx_real + wave_Zy_real * 1i;
 temp_r = abs(temp);
 temp_th = angle(temp);
 temp_th = mod(modifiy_theta + temp_th, 2*pi);
-pngwave = zeros(201, 201, 128);
+pngwave = zeros(length(zx), length(zy), 128);
 pngwave = double(pngwave);
 
 for i = 1 : 128
